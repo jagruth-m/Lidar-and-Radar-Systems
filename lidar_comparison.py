@@ -13,10 +13,6 @@ path_groundtruth = f"{root}/groundtruth"
 path_radar = f"{root}/radar"
 path_velodyne = f"{root}/velodyne"
 
-'''np.loadtxt(path_blickfeld, delimiter=',')
-np.loadtxt(path_velodyne, delimiter=',')
-np.loadtxt(path_groundtruth, delimiter=',')'''
-
 
 def readPC(path):
     """
@@ -149,7 +145,6 @@ def get_sub_points_of_object(obj, pc):
     i = 0
     subpoints_array = np.empty((0, 3), float)
     while i < len(pc_new):
-        # row_array = np.array(pc_new[i,:])
 
         if (pc_new[i, 0] > x_min) and (pc_new[i, 0] < x_max):
             if (pc_new[i, 1] > y_min) and (pc_new[i, 1] < y_max):
@@ -157,7 +152,6 @@ def get_sub_points_of_object(obj, pc):
                     # print(pc_new[i,:])
                     subpoints_array = np.append(subpoints_array, [pc_new[i, :]], axis=0)
         i = i + 1
-    # print("i=",i)
     return subpoints_array
 
 ###main code from here###
@@ -184,18 +178,6 @@ for i in range(240):
     dist_array = np.append(dist_array, dist)
     no_of_blick_points = np.append(no_of_blick_points, len(subpoints_blick))
     no_of_velo_points = np.append(no_of_velo_points, len(subpoints_velo))
-
-    '''pts_blick_rec1 += [get_sub_points_of_object(label, pc_blick[:, 0:3])[0].sum()]
-    print(pts_blick_rec1)
-    #a = pts_blick_rec1.shape()
-    pts_velo_rec1 += [get_sub_points_of_object(label, pc_velo[:, 0:3])[0].sum()]
-    pts_radar_rec1 += [get_sub_points_of_object(label, pc_radar[:, 0:3])[0].sum()]
-
-    plt.plot(pts_blick_rec1)
-    plt.plot(pts_velo_rec1)
-    plt.plot(pts_radar_rec1)
-    plt.legend(["Blick", "Velodyne", "Radar"])
-    plt.show(block=False)'''
 
 plt.figure(1)
 plt.xlabel('distance from the sensor(in m)')
@@ -228,8 +210,7 @@ Image shape: {img.shape}")
 subpoints_b = get_sub_points_of_object(label, pc_blick[:, 0:3])
 subpoints_v = get_sub_points_of_object(label, pc_velo[:, 0:3])
 subpoints_r = get_sub_points_of_object(label, pc_radar[:, 0:3])
-#print(subpoints)
-#print(len(subpoints))
+
 bb_raw = make_boundingbox(label)
 inv = np.linalg.inv(rt_matrix(yaw=label[6]))
 pc_new_b = rotate_points(pc_blick[:, 0:3], inv)
@@ -358,118 +339,3 @@ layout = go.Layout(
 fig = go.Figure(data=data3, layout=layout)
 fig.show()
 plt.show()
-'''subpoints = get_sub_points_of_object(label, pc_velo[:, 0:3])
-data = [go.Scatter3d(x=pc_velo[:, 0],
-                     y=pc_velo[:, 1],
-                     z=pc_velo[:, 2],
-                     mode='markers', type='scatter3d',
-                     text=np.arange(pc_velo.shape[0]),
-                     marker={
-                         'size': 2,
-                         'color': "green",
-                         'colorscale': 'rainbow',
-                     }),
-        go.Scatter3d(x=subpoints[1][:, 0],
-                     y=subpoints[1][:, 1],
-                     z=subpoints[1][:, 2],
-                     mode='markers', type='scatter3d',
-                     marker={
-                         'size': 2,
-                         'color': "blue",
-                         'colorscale': 'rainbow',
-                     }),
-        go.Scatter3d(x=bb[:, 0],
-                     y=bb[:, 1],
-                     z=bb[:, 2],
-                     mode='lines', type='scatter3d',
-                     line={
-                         'width': 10,
-                         'color': "red",
-                         'colorscale': 'rainbow'
-                     })
-        ]
-layout = go.Layout(
-    scene={
-        'xaxis': {'range': [-20, 20], 'rangemode': 'tozero', 'tick0': -5},
-        'yaxis': {'range': [0, 40], 'rangemode': 'tozero', 'tick0': -5},
-        'zaxis': {'range': [-20., 20.], 'rangemode': 'tozero'}
-    }
-)
-go.Figure(data=data, layout=layout)
-
-subpoints = get_sub_points_of_object(label, pc_radar[:, 0:3])
-data = [go.Scatter3d(x=pc_radar[:, 0],
-                     y=pc_radar[:, 1],
-                     z=pc_radar[:, 2],
-                     mode='markers', type='scatter3d',
-                     text=np.arange(pc_radar.shape[0]),
-                     marker={
-                         'size': 2,
-                         'color': "green",
-                         'colorscale': 'rainbow',
-                     }),
-        go.Scatter3d(x=subpoints[1][:, 0],
-                     y=subpoints[1][:, 1],
-                     z=subpoints[1][:, 2],
-                     mode='markers', type='scatter3d',
-                     marker={
-                         'size': 2,
-                         'color': "blue",
-                         'colorscale': 'rainbow',
-                     }),
-        go.Scatter3d(x=bb[:, 0],
-                     y=bb[:, 1],
-                     z=bb[:, 2],
-                     mode='lines', type='scatter3d',
-                     line={
-                         'width': 10,
-                         'color': "red",
-                         'colorscale': 'rainbow'
-                     })
-        ]
-layout = go.Layout(
-    scene={
-        'xaxis': {'range': [-20, 20], 'rangemode': 'tozero', 'tick0': -5},
-        'yaxis': {'range': [0, 40], 'rangemode': 'tozero', 'tick0': -5},
-        'zaxis': {'range': [-20., 20.], 'rangemode': 'tozero'}
-    }
-)
-go.Figure(data=data, layout=layout)
-
-root = f"C:/Users/medav/OneDrive/Documents/LiDAR RaDAR/TASKS/Dataset2022/record1/"
-pts_blick_rec1 = []
-pts_velo_rec1 = []
-pts_radar_rec1 = []
-for i in range(240):
-    pc_blick = readPC(f"{root}/blickfeld/{i:06d}.csv")
-    pc_velo = readPC(f"{root}/velodyne/{i:06d}.csv")
-    pc_radar = readPC(f"{root}/radar/{i:06d}.csv")
-    label = readLabels(f"{root}/groundtruth/{i:06d}.csv")
-
-    pts_blick_rec1 += [get_sub_points_of_object(label, pc_blick[:, 0:3])[0].sum()]
-    pts_velo_rec1 += [get_sub_points_of_object(label, pc_velo[:, 0:3])[0].sum()]
-    pts_radar_rec1 += [get_sub_points_of_object(label, pc_radar[:, 0:3])[0].sum()]
-
-plt.plot(pts_blick_rec1)
-plt.plot(pts_velo_rec1)
-plt.plot(pts_radar_rec1)
-plt.legend(["Blick", "Velodyne", "Radar"])
-
-root = f"C:/Users/medav/OneDrive/Documents/LiDAR RaDAR/TASKS/Dataset2022/record2/"
-pts_blick_rec2 = []
-pts_velo_rec2 = []
-pts_radar_rec2 = []
-for i in range(100):
-    pc_blick = readPC(f"{root}/blickfeld/{i:06d}.csv")
-    pc_velo = readPC(f"{root}/velodyne/{i:06d}.csv")
-    pc_radar = readPC(f"{root}/radar/{i:06d}.csv")
-    label = readLabels(f"{root}/groundtruth/{i:06d}.csv")
-
-    pts_blick_rec2 += [get_sub_points_of_object(label, pc_blick[:, 0:3])[0].sum()]
-    pts_velo_rec2 += [get_sub_points_of_object(label, pc_velo[:, 0:3])[0].sum()]
-    pts_radar_rec2 += [get_sub_points_of_object(label, pc_radar[:, 0:3])[0].sum()]
-
-plt.plot(pts_blick_rec2)
-plt.plot(pts_velo_rec2)
-plt.plot(pts_radar_rec2)
-plt.legend(["Blick", "Velodyne", "Radar"])'''
